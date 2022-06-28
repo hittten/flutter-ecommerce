@@ -4,7 +4,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_ecommerce/product_class.dart';
-import 'package:flutter_ecommerce/products_mock.dart';
+import 'package:flutter_ecommerce/product_service.dart';
 
 void main() {
   runApp(const MyApp());
@@ -21,15 +21,30 @@ class MyApp extends StatelessWidget {
         appBar: AppBar(
           title: const Text('Welcome to Flutter'),
         ),
-        body: ListView.separated(
-          padding: const EdgeInsets.all(16.0),
-          itemCount: productsMock.length,
-          separatorBuilder: (_, __) => const Divider(),
-          itemBuilder: (_, i) => Container(
-            padding: const EdgeInsets.only(bottom: 32.0),
-            child: productItem(productsMock[i]),
-          ),
-        ),
+        body: FutureBuilder<List<Product>>(
+            future: getProducts(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                final products = snapshot.data!;
+                return ListView.separated(
+                  padding: const EdgeInsets.all(16.0),
+                  itemCount: products.length,
+                  separatorBuilder: (_, __) => const Divider(),
+                  itemBuilder: (_, i) => Container(
+                    padding: const EdgeInsets.only(bottom: 32.0),
+                    child: productItem(products[i]),
+                  ),
+                );
+              } else if (snapshot.hasError) {
+                return const Text('ERROR');
+              } else {
+                return const Center(
+                  child: CircularProgressIndicator(
+                    value: null,
+                  ),
+                );
+              }
+            }),
       ),
     );
   }
