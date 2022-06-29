@@ -23,7 +23,7 @@ Future<Product> createProduct({
     image: 'https://picsum.photos/id/$id/680/460',
   );
 
-  productsMock.add(product);
+  productsMock.insert(0, product);
 
   return product;
 }

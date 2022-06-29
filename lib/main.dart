@@ -12,6 +12,8 @@ void main() {
   runApp(const MyApp());
 }
 
+late List<Product> products;
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -45,16 +47,8 @@ class Home extends StatelessWidget {
           future: getProducts(),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              final products = snapshot.data!;
-              return ListView.separated(
-                padding: const EdgeInsets.all(16.0),
-                itemCount: products.length,
-                separatorBuilder: (_, __) => const Divider(),
-                itemBuilder: (_, i) => Container(
-                  padding: const EdgeInsets.only(bottom: 32.0),
-                  child: productItem(products[i], context),
-                ),
-              );
+              products = snapshot.data!;
+              return const HomeBody();
             } else if (snapshot.hasError) {
               return const Text('ERROR');
             } else {
@@ -65,6 +59,34 @@ class Home extends StatelessWidget {
               );
             }
           }),
+    );
+  }
+}
+
+class HomeBody extends StatefulWidget {
+  const HomeBody({Key? key}) : super(key: key);
+
+  @override
+  State<HomeBody> createState() => _HomeBodyState();
+}
+
+class _HomeBodyState extends State<HomeBody> {
+  @override
+  Widget build(BuildContext context) {
+    return RefreshIndicator(
+      onRefresh: () async {
+        products = await getProducts();
+        setState(() {});
+      },
+      child: ListView.separated(
+        padding: const EdgeInsets.all(16.0),
+        itemCount: products.length,
+        separatorBuilder: (_, __) => const Divider(),
+        itemBuilder: (_, i) => Container(
+          padding: const EdgeInsets.only(bottom: 32.0),
+          child: productItem(products[i], context),
+        ),
+      ),
     );
   }
 }
