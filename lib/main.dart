@@ -5,6 +5,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_ecommerce/product_class.dart';
 import 'package:flutter_ecommerce/product_service.dart';
+import 'package:flutter_ecommerce/screens/product_create.dart';
 import 'package:flutter_ecommerce/screens/product_detail.dart';
 
 void main() {
@@ -16,37 +17,54 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       title: 'Welcome to Flutter',
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Welcome to Flutter'),
-        ),
-        body: FutureBuilder<List<Product>>(
-            future: getProducts(),
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                final products = snapshot.data!;
-                return ListView.separated(
-                  padding: const EdgeInsets.all(16.0),
-                  itemCount: products.length,
-                  separatorBuilder: (_, __) => const Divider(),
-                  itemBuilder: (_, i) => Container(
-                    padding: const EdgeInsets.only(bottom: 32.0),
-                    child: productItem(products[i], context),
-                  ),
-                );
-              } else if (snapshot.hasError) {
-                return const Text('ERROR');
-              } else {
-                return const Center(
-                  child: CircularProgressIndicator(
-                    value: null,
-                  ),
-                );
-              }
-            }),
+      home: Home(),
+    );
+  }
+}
+
+class Home extends StatelessWidget {
+  const Home({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Welcome to Flutter'),
       ),
+      floatingActionButton: FloatingActionButton(
+        child: const Icon(Icons.add),
+        onPressed: () {
+          Navigator.of(context).push(MaterialPageRoute(builder: (_) {
+            return productCreateScreen();
+          }));
+        },
+      ),
+      body: FutureBuilder<List<Product>>(
+          future: getProducts(),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              final products = snapshot.data!;
+              return ListView.separated(
+                padding: const EdgeInsets.all(16.0),
+                itemCount: products.length,
+                separatorBuilder: (_, __) => const Divider(),
+                itemBuilder: (_, i) => Container(
+                  padding: const EdgeInsets.only(bottom: 32.0),
+                  child: productItem(products[i], context),
+                ),
+              );
+            } else if (snapshot.hasError) {
+              return const Text('ERROR');
+            } else {
+              return const Center(
+                child: CircularProgressIndicator(
+                  value: null,
+                ),
+              );
+            }
+          }),
     );
   }
 }
