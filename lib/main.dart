@@ -5,6 +5,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_ecommerce/product_class.dart';
 import 'package:flutter_ecommerce/product_service.dart';
+import 'package:flutter_ecommerce/screens/product_detail.dart';
 
 void main() {
   runApp(const MyApp());
@@ -32,7 +33,7 @@ class MyApp extends StatelessWidget {
                   separatorBuilder: (_, __) => const Divider(),
                   itemBuilder: (_, i) => Container(
                     padding: const EdgeInsets.only(bottom: 32.0),
-                    child: productItem(products[i]),
+                    child: productItem(products[i], context),
                   ),
                 );
               } else if (snapshot.hasError) {
@@ -50,9 +51,9 @@ class MyApp extends StatelessWidget {
   }
 }
 
-Column productItem(Product product) {
+Column productItem(Product product, BuildContext context) {
   return Column(
-    crossAxisAlignment: CrossAxisAlignment.stretch,
+    crossAxisAlignment: CrossAxisAlignment.start,
     children: [
       Image.network(
         product.image,
@@ -69,6 +70,18 @@ Column productItem(Product product) {
         ),
       ),
       Text('€ ${product.price.toStringAsFixed(2)}'),
+      ElevatedButton(
+        onPressed: () {
+          _productDetails(product, context);
+        },
+        child: const Text('Details'),
+      ),
     ],
   );
+}
+
+void _productDetails(Product product, BuildContext context) {
+  Navigator.push(context, MaterialPageRoute(builder: (context) {
+    return productDetailScreen(context, product);
+  }));
 }
