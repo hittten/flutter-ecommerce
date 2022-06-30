@@ -1,29 +1,43 @@
-import 'package:flutter_ecommerce/product_class.dart';
-import 'package:flutter_ecommerce/products_mock.dart';
+import 'dart:convert';
 
-Future<List<Product>> getProducts() => Future.delayed(
-      const Duration(seconds: 2),
-      () => productsMock,
-    );
+import 'package:flutter_ecommerce/product_class.dart';
+import 'package:http/http.dart' as http;
+
+const apiUrl = 'https://us-central1-classroom-playground.cloudfunctions.net';
+const user = 'gilberto';
+
+Future<List<Product>> getProducts() async {
+  final response = await http.get(Uri.parse('$apiUrl/products/$user'));
+
+  if (response.statusCode == 200) {
+    final List<dynamic> json = jsonDecode(response.body);
+
+    return json.map((e) => Product.fromJson(e)).toList();
+  } else {
+    throw Exception('Failed to load products');
+  }
+}
 
 Future<Product> createProduct({
   required String name,
   required double price,
   required String description,
 }) async {
-  await Future.delayed(const Duration(seconds: 2));
-
-  final String id = (productsMock.length + 1).toString();
-
-  final product = Product(
-    id: id,
-    name: name,
-    price: price,
-    description: description,
-    image: 'https://picsum.photos/id/$id/680/460',
+  final response = await http.post(
+    Uri.parse('$apiUrl/products/$user'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+    body: jsonEncode(<String, dynamic>{
+      'name': name,
+      'price': price,
+      'description': description,
+    }),
   );
 
-  productsMock.insert(0, product);
-
-  return product;
+  if (response.statusCode == 200) {
+    return Product.fromJson(jsonDecode(response.body));
+  } else {
+    throw Exception('Failed to create produc.');
+  }
 }
