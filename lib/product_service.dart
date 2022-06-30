@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:camera/camera.dart';
 import 'package:flutter_ecommerce/product_class.dart';
 import 'package:http/http.dart' as http;
 
@@ -22,6 +23,7 @@ Future<Product> createProduct({
   required String name,
   required double price,
   required String description,
+  required XFile image,
 }) async {
   final response = await http.post(
     Uri.parse('$apiUrl/products/$user'),
@@ -32,12 +34,13 @@ Future<Product> createProduct({
       'name': name,
       'price': price,
       'description': description,
+      'image': base64Encode(await image.readAsBytes()),
     }),
   );
 
   if (response.statusCode == 200) {
     return Product.fromJson(jsonDecode(response.body));
   } else {
-    throw Exception('Failed to create produc.');
+    throw Exception('Failed to create product.');
   }
 }

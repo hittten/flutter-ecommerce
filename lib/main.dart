@@ -39,7 +39,7 @@ class Home extends StatelessWidget {
         child: const Icon(Icons.add),
         onPressed: () {
           Navigator.of(context).push(MaterialPageRoute(builder: (_) {
-            return productCreateScreen();
+            return const ProductCreateScreen();
           }));
         },
       ),
